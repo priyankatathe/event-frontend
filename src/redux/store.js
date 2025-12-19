@@ -19,7 +19,9 @@ const reduxStore = configureStore({
     eventBookApi.middleware,
     customerApi.middleware,
     razorpayApi.middleware,
-    ]
+    ],
+    devTools: import.meta.env.MODE !== "production",
+
 })
 
 export default reduxStore

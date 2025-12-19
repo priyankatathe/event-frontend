@@ -1,6 +1,6 @@
 
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, HashRouter, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -27,7 +27,7 @@ import Dashboard from "./admin/Dashboard";
 
 const App = () => {
   return <>
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
@@ -72,7 +72,7 @@ const App = () => {
       />
 
       {/* <Footer /> */}
-    </BrowserRouter>
+    </HashRouter>
   </>
 
 };
