@@ -44,19 +44,18 @@ export const authApi = createApi({
                 }
             }),
             logoutAdmin: builder.mutation({
-                query: AdminData => {
-                    return {
-                        url: "/admin-logout",
-                        method: "POST",
-                        body: AdminData
-                    }
+                query: () => ({
+                    url: "/admin-logout",
+                    method: "POST",
+                    credentials: "include" // 👈 cookie को सही से हटाने के लिए जरूरी
+                }),
+                transformResponse: (data) => {
+                    localStorage.removeItem("admin"); // अगर localStorage में JWT रखा है तो हटा सकते हैं
+                    return data;
                 },
                 invalidatesTags: ["auth"],
-                transformResponse: data => {
-                    localStorage.removeItem("admin")
-                    return data.result
-                }
             }),
+
 
             getAuthEvent: builder.query({
                 query: () => {
