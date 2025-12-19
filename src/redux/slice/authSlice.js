@@ -24,6 +24,7 @@ const authSlice = createSlice({
         })
         .addMatcher(authApi.endpoints.logoutAdmin.matchFulfilled, (state, { payload }) => {
             state.admin = null
+            localStorage.removeItem("admin")
         })
         //customer
         .addMatcher(customerApi.endpoints.loginCustomer.matchFulfilled, (state, { payload }) => {

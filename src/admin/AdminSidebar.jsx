@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { FaUserAlt, FaCalendarPlus, FaListUl, FaBars, FaChartPie, FaSignOutAlt } from 'react-icons/fa'
-import { useGetAdminQuery } from '../redux/api/authApi'
+import { useGetAdminQuery, useLogoutAdminMutation } from '../redux/api/authApi'
 
 const LINKS = [
     { label: 'Dashboard', to: '/admin', icon: FaChartPie },
@@ -12,14 +12,22 @@ const LINKS = [
 
 const AdminSidebar = () => {
     const { data: admin, isLoading, isError } = useGetAdminQuery()
+    const [logoutAdmin, { isLoading: isLoggingOut }] = useLogoutAdminMutation()
     const [isOpen, setIsOpen] = useState(false)
     const location = useLocation()
     const navigate = useNavigate()
 
     const toggleSidebar = () => setIsOpen(!isOpen)
-    const handleLogout = () => {
-        localStorage.removeItem('token')
-        navigate('/admin-login')
+
+    // Logout using RTK Query mutation
+    const handleLogout = async () => {
+        try {
+            await logoutAdmin().unwrap()  // call the API
+            localStorage.removeItem('admin') // remove from localStorage if stored
+            navigate('/admin-login') // redirect to login page
+        } catch (err) {
+            console.error("Logout failed:", err)
+        }
     }
 
     const AdminInfo = () => (
@@ -44,13 +52,9 @@ const AdminSidebar = () => {
                 <Link
                     to={item.to}
                     onClick={() => isOpen && toggleSidebar()}
-                    className={`flex items-center gap-3 px-4 py-2 rounded-xl my-1 mx-2 cursor-pointer text-white 
-                   `
-                    }
+                    className={`flex items-center gap-3 px-4 py-2 rounded-xl my-1 mx-2 cursor-pointer text-white`}
                 >
-                    <div
-                        className={`p-2 rounded-md flex items-center justify-center bg-[#33691E] text-white`}
-                    >
+                    <div className={`p-2 rounded-md flex items-center justify-center bg-[#33691E] text-white`}>
                         <Icon size={16} />
                     </div>
                     <span className="text-sm font-medium">{item.label}</span>
@@ -61,7 +65,6 @@ const AdminSidebar = () => {
             </div>
         )
     }
-
 
     return (
         <>
@@ -92,9 +95,10 @@ const AdminSidebar = () => {
                 <div className="mt-auto px-4 py-4">
                     <button
                         onClick={handleLogout}
-                        className="w-full flex items-center justify-center gap-2 bg-red-600 text-white py-2 rounded-lg transition"
+                        disabled={isLoggingOut}
+                        className="w-full flex items-center justify-center gap-2 bg-red-600 text-white py-2 rounded-lg transition disabled:opacity-50"
                     >
-                        <FaSignOutAlt /> Logout
+                        <FaSignOutAlt /> {isLoggingOut ? 'Logging Out...' : 'Logout'}
                     </button>
                 </div>
             </div>
